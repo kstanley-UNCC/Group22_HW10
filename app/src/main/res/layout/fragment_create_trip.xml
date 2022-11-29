@@ -8,7 +8,7 @@
     tools:context=".CreateTripFragment">
 
     <Button
-        android:id="@+id/buttonSignup2"
+        android:id="@+id/buttonSubmit"
         android:layout_width="379dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"

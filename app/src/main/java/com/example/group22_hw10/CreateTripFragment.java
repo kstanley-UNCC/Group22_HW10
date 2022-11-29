@@ -36,6 +36,10 @@ public class CreateTripFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        binding.buttonSubmit.setOnClickListener(v -> {
+
+        });
+
         requireActivity().setTitle(R.string.create_trip_title);
     }
 }
