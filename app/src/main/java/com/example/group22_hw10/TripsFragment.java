@@ -65,6 +65,8 @@ public class TripsFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        binding.buttonNewTrip.setOnClickListener(v -> mListener.goAddTrip());
+
         binding.tripsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         Query query = firebaseFirestore
