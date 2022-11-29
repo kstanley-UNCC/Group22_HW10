@@ -1,3 +1,7 @@
+// Group22_HW10
+// MainActivity.java
+// Ken Stanley & Stephanie Karp
+
 package com.example.group22_hw10;
 
 import androidx.appcompat.app.AppCompatActivity;
