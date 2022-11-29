@@ -1,5 +1,7 @@
 package com.example.group22_hw10;
 
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Polyline;
 import com.google.firebase.Timestamp;
 
 import java.io.Serializable;
@@ -12,14 +14,16 @@ public class Trip implements Serializable {
     private String trip_name;
     private Timestamp created_at;
     private Timestamp completed_at;
+    private Polyline polyline;
     private double total_miles;
     private String status;
 
     public Trip() {}
 
-    public Trip(String user_id, String trip_name, Timestamp created_at) {
+    public Trip(String user_id, String trip_name, Polyline polyline) {
         this.user_id = user_id;
         this.trip_name = trip_name;
+        this.polyline = polyline;
         this.created_at = Timestamp.now();
     }
 
@@ -49,6 +53,14 @@ public class Trip implements Serializable {
 
     public String getStatus() {
         return status;
+    }
+
+    public Polyline getPolyline() {
+        return polyline;
+    }
+
+    public void setPolyline(Polyline polyline) {
+        this.polyline = polyline;
     }
 
     public Trip setTrip_id(String trip_id) {
@@ -94,6 +106,7 @@ public class Trip implements Serializable {
                 ", trip_name='" + trip_name + '\'' +
                 ", created_at=" + created_at +
                 ", completed_at=" + completed_at +
+                ", polyline=" + polyline +
                 ", total_miles=" + total_miles +
                 ", status='" + status + '\'' +
                 '}';

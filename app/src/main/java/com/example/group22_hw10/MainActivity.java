@@ -15,7 +15,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-public class MainActivity extends AppCompatActivity implements LoginFragment.LoginListener, CreateAccountFragment.SignUpListener {
+public class MainActivity extends AppCompatActivity implements LoginFragment.LoginListener, CreateAccountFragment.SignUpListener, TripsFragment.TripsListener {
 
     ActivityMainBinding binding;
     final FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
@@ -50,9 +50,9 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
 
             this.firebaseUser = task.getResult().getUser();
 
-//            getSupportFragmentManager().beginTransaction()
-//                    .replace(R.id.rootView, TripsFragment.newInstance(this.firebaseUser))
-//                    .commit();
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.rootView, TripsFragment.newInstance(this.firebaseUser))
+                    .commit();
         });
     }
 
@@ -100,9 +100,9 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
 
                 this.firebaseUser = user;
 
-//                getSupportFragmentManager().beginTransaction()
-//                        .replace(R.id.rootView, TripsFragment.newInstance(this.firebaseUser))
-//                        .commit();
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.rootView, TripsFragment.newInstance(this.firebaseUser))
+                        .commit();
             });
         });
     }
@@ -110,5 +110,18 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
     @Override
     public void goLogin() {
         getSupportFragmentManager().popBackStack();
+    }
+
+    @Override
+    public void goAddTrip() {
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.rootView, new CreateTripFragment())
+                .addToBackStack(null)
+                .commit();
+    }
+
+    @Override
+    public void onPointerCaptureChanged(boolean hasCapture) {
+        super.onPointerCaptureChanged(hasCapture);
     }
 }
