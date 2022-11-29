@@ -9,6 +9,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,22 +17,27 @@ import android.view.ViewGroup;
 
 import com.example.group22_hw10.databinding.FragmentLoginBinding;
 import com.example.group22_hw10.databinding.FragmentTripsBinding;
+import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class TripsFragment extends Fragment {
     FragmentTripsBinding binding;
 
-    private static final String ARG_PARAM1 = "param1";
+    private static final String ARG_USER = "user";
 
-    private String mParam1;
+    private FirebaseUser firebaseUser;
+    private final FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
+    private FirestoreRecyclerAdapter<Trip, TripHolder> adapter;
 
     public TripsFragment() {
         // Required empty public constructor
     }
 
-    public static TripsFragment newInstance(String param1, String param2) {
+    public static TripsFragment newInstance(FirebaseUser user) {
         TripsFragment fragment = new TripsFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
+        args.putParcelable(ARG_USER, user);
         fragment.setArguments(args);
         return fragment;
     }
@@ -40,7 +46,7 @@ public class TripsFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
+            firebaseUser = getArguments().getParcelable(ARG_USER);
         }
     }
 
@@ -55,5 +61,12 @@ public class TripsFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         requireActivity().setTitle(R.string.trips_title);
+    }
+
+    private class TripHolder extends RecyclerView.ViewHolder {
+
+        public TripHolder(@NonNull View itemView) {
+            super(itemView);
+        }
     }
 }
