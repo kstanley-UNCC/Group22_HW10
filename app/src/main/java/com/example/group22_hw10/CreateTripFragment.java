@@ -4,6 +4,8 @@
 
 package com.example.group22_hw10;
 
+import android.content.Context;
+import android.location.Location;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -37,9 +39,24 @@ public class CreateTripFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         binding.buttonSubmit.setOnClickListener(v -> {
-
+            String tripName = binding.editTextTripName.getText().toString();
+            //  Location userLocation;
+           // mListener.createTrip(tripName, userLocation);
         });
 
         requireActivity().setTitle(R.string.create_trip_title);
+    }
+
+    AddTripListener mListener;
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        mListener = (AddTripListener) context;
+    }
+
+    interface AddTripListener {
+        void createTrip(String trip_name, Location location);
+        void goTrips();
     }
 }
