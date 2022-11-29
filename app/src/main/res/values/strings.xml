@@ -5,4 +5,16 @@
     <string name="trip_details_title">Trip Details</string>
     <string name="create_trip_title">Create Trip</string>
     <string name="trips_title">Trips</string>
+    <string name="add_label">Add Course</string>
+    <string name="submit_label">Submit</string>
+    <string name="cancel_label">Cancel</string>
+    <string name="name_label">Name</string>
+    <string name="email_label">Email</string>
+    <string name="password_label">Password</string>
+    <string name="login_label">Login</string>
+    <string name="logout_label">Logout</string>
+    <string name="create_account_label">Create New Account</string>
+    <string name="new_trip_label">New Trip</string>
+    <string name="current_location_label">Current Location: </string>
+    <string name="complete_label">Complete</string>
 </resources>

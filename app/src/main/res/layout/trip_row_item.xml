@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_margin="6dp"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="8dp">
+
+        <TextView
+            android:id="@+id/textViewTripMiles"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Miles"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textViewTripCompleted" />
+
+        <TextView
+            android:id="@+id/textViewTripStatus"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:text="Status"
+            android:textSize="16sp"
+            app:layout_constraintStart_toStartOf="@+id/textViewTripName"
+            app:layout_constraintTop_toBottomOf="@+id/textViewTripCompleted" />
+
+        <TextView
+            android:id="@+id/textViewTripName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Trip name"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/textViewTripStart"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Started At: "
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/textViewTripName"
+            app:layout_constraintTop_toBottomOf="@+id/textViewTripName" />
+
+        <TextView
+            android:id="@+id/textViewTripCompleted"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Completed At:"
+            app:layout_constraintStart_toStartOf="@+id/textViewTripName"
+            app:layout_constraintTop_toBottomOf="@+id/textViewTripStart" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.cardview.widget.CardView>
