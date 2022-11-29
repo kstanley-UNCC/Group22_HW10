@@ -17,4 +17,5 @@
     <string name="new_trip_label">New Trip</string>
     <string name="current_location_label">Current Location: </string>
     <string name="complete_label">Complete</string>
+    <string name="google_map_label">Google Maps</string>
 </resources>
