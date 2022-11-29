@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">Group22_HW10</string>
     <string name="login_title">Login</string>
+    <string name="create_account_title">Create New Account</string>
+    <string name="trip_details_title">Trip Details</string>
+    <string name="create_trip_title">Create Trip</string>
+    <string name="trips_title">Trips</string>
 </resources>
