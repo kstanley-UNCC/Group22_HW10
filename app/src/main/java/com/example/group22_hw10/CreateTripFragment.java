@@ -68,7 +68,7 @@ public class CreateTripFragment extends Fragment {
 
         binding.buttonSubmit.setOnClickListener(v -> {
             String tripName = binding.editTextTripName.getText().toString();
-           // mListener.createTrip(tripName, currentLocation);
+            mListener.createTrip(tripName, currentLocation);
         });
 
         requireActivity().setTitle(R.string.create_trip_title);
