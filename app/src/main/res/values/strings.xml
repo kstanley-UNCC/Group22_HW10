@@ -19,4 +19,5 @@
     <string name="complete_label">Complete</string>
     <string name="google_map_label">Google Maps</string>
     <string name="location_status_loading">Loading …</string>
+    <string name="location_status_success">Success</string>
 </resources>

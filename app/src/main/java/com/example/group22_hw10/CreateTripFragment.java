@@ -63,7 +63,7 @@ public class CreateTripFragment extends Fragment {
         }
 
         // when we get current location
-        binding.textViewCurrentLocationStatus.setText("Success");
+        binding.textViewCurrentLocationStatus.setText(R.string.location_status_success);
         binding.textViewCurrentLocationStatus.setTextColor(Color.GREEN);
 
         binding.buttonSubmit.setOnClickListener(v -> {
