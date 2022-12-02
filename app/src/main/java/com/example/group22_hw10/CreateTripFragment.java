@@ -39,7 +39,7 @@ public class CreateTripFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getContext());
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext());
     }
 
     @Override
@@ -55,9 +55,9 @@ public class CreateTripFragment extends Fragment {
         binding.textViewCurrentLocationStatus.setText("Loading ...");
         binding.textViewCurrentLocationStatus.setTextColor(Color.YELLOW);
 
-        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 //            fusedLocationProviderClient.getLastLocation()
-//                    .addOnSuccessListener(getContext(), new OnSuccessListener<Location>() {
+//                    .addOnSuccessListener(requireContext(), new OnSuccessListener<Location>() {
 //                        @Override
 //                        public void onSuccess(Location location) {
 //                            currentLocation = location;
