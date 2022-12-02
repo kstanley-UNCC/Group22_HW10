@@ -49,7 +49,7 @@ public class CreateTripFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        binding.textViewCurrentLocationStatus.setText("Loading ...");
+        binding.textViewCurrentLocationStatus.setText(R.string.location_status_loading);
         binding.textViewCurrentLocationStatus.setTextColor(Color.YELLOW);
 
         if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
