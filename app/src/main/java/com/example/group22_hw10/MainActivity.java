@@ -7,6 +7,7 @@ package com.example.group22_hw10;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.location.Location;
 import android.os.Bundle;
 
 import com.example.group22_hw10.databinding.ActivityMainBinding;
@@ -15,7 +16,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-public class MainActivity extends AppCompatActivity implements LoginFragment.LoginListener, CreateAccountFragment.SignUpListener, TripsFragment.TripsListener {
+public class MainActivity extends AppCompatActivity implements LoginFragment.LoginListener, CreateAccountFragment.SignUpListener, TripsFragment.TripsListener, CreateTripFragment.AddTripListener {
 
     ActivityMainBinding binding;
     final FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
@@ -123,5 +124,15 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
     @Override
     public void onPointerCaptureChanged(boolean hasCapture) {
         super.onPointerCaptureChanged(hasCapture);
+    }
+
+    @Override
+    public void createTrip(String trip_name, Location location) {
+
+    }
+
+    @Override
+    public void goTrips() {
+
     }
 }
