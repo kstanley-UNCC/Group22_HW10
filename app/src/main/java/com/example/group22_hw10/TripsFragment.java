@@ -6,7 +6,6 @@ package com.example.group22_hw10;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.location.Location;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -27,6 +26,10 @@ import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 public class TripsFragment extends Fragment {
 
@@ -88,7 +91,7 @@ public class TripsFragment extends Fragment {
                 holder.setTrip_name(model.getTrip_name());
                 holder.setTrip_start(model.getCreated_at());
                 holder.setTrip_end(model.getCompleted_at());
-                holder.setTrip_status(model.getStatus(), model.getEnd_location());
+                holder.setTrip_status(model.getStatus(), model.getEnd_latitude());
                 holder.setTrip_miles(model.getTotal_miles());
             }
 
@@ -105,6 +108,18 @@ public class TripsFragment extends Fragment {
         requireActivity().setTitle(R.string.trips_title);
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        adapter.startListening();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        adapter.stopListening();
+    }
+
     private static class TripHolder extends RecyclerView.ViewHolder {
 
         private final View view;
@@ -119,14 +134,24 @@ public class TripsFragment extends Fragment {
             textView.setText(trip_name);
         }
 
-        void setTrip_start(Timestamp trip_start) {
+        void setTrip_start(Timestamp created_at) {
             TextView textView = view.findViewById(R.id.textViewTripStart);
-            textView.setText("Started at: " + trip_start.toString());
+            Date date = created_at.toDate();
+            SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyy hh:mm a", Locale.getDefault());
+            String dateFormat = sdf.format(date);
+            textView.setText("Started at: " + dateFormat);
         }
 
-        void setTrip_end(Timestamp trip_end) {
+        void setTrip_end(Timestamp completed_at) {
             TextView textView = view.findViewById(R.id.textViewTripCompleted);
-            textView.setText("Completed at: " + trip_end.toString());
+            if (completed_at == null) {
+                textView.setText("Completed at: N/A");
+            } else {
+                Date date = completed_at.toDate();
+                SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyy hh:mm a", Locale.getDefault());
+                String dateFormat = sdf.format(date);
+                textView.setText("Completed at: " + dateFormat);
+            }
         }
 
         void setTrip_miles(double trip_miles) {
@@ -134,10 +159,10 @@ public class TripsFragment extends Fragment {
             textView.setText(trip_miles + " Miles");
         }
 
-        void setTrip_status(String trip_status, Location end_location) {
+        void setTrip_status(String trip_status, double end_latitude) {
             TextView textView = view.findViewById(R.id.textViewTripStatus);
             textView.setText(trip_status);
-            if (end_location != null) {
+            if (end_latitude != 0) {
                 textView.setTextColor(Color.GREEN);
             } else {
                 textView.setTextColor(Color.RED);

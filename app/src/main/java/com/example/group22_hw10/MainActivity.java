@@ -16,6 +16,8 @@ import android.util.Log;
 import com.example.group22_hw10.databinding.ActivityMainBinding;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
@@ -164,8 +166,8 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
     }
 
     @Override
-    public void createTrip(String trip_name, Location location) {
-        Trip trip = new Trip(firebaseUser.getUid(), trip_name, location);
+    public void createTrip(String trip_name, double lat, double longi) {
+        Trip trip = new Trip(firebaseUser.getUid(), trip_name, lat, longi);
 
         firebaseFirestore
                 .collection("Users")

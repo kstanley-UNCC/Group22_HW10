@@ -36,6 +36,7 @@ import com.google.android.gms.location.Granularity;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.Priority;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.CancellationTokenSource;
 
 public class CreateTripFragment extends Fragment {
@@ -44,7 +45,7 @@ public class CreateTripFragment extends Fragment {
 
     FragmentCreateTripBinding binding;
     LocationRequest locationRequest;
-    Location currentLocation;
+    LatLng currentLocation;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -75,7 +76,7 @@ public class CreateTripFragment extends Fragment {
 
         binding.buttonSubmit.setOnClickListener(v -> {
             String tripName = binding.editTextTripName.getText().toString();
-            mListener.createTrip(tripName, currentLocation);
+            mListener.createTrip(tripName, currentLocation.latitude, currentLocation.longitude);
         });
 
         requireActivity().setTitle(R.string.create_trip_title);
@@ -111,7 +112,8 @@ public class CreateTripFragment extends Fragment {
 
         fusedLocationClient.getCurrentLocation(currentLocationRequest, cnclTokenSrc.getToken()).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
-                currentLocation = task.getResult();
+                Location location = task.getResult();
+                currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
                 Log.d("demo", "getCurrentLocation: " + currentLocation);
                 binding.textViewCurrentLocationStatus.setText(R.string.location_status_success);
                 binding.textViewCurrentLocationStatus.setTextColor(Color.GREEN);
@@ -123,7 +125,7 @@ public class CreateTripFragment extends Fragment {
     }
 
     interface AddTripListener {
-        void createTrip(String trip_name, Location location);
+        void createTrip(String trip_name, double lat, double longi);
     }
 
     public ActivityResultLauncher<String[]> multiplePermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(), result -> {

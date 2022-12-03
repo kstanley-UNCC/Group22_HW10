@@ -1,9 +1,7 @@
 package com.example.group22_hw10;
 
-import android.location.Location;
 
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Polyline;
 import com.google.firebase.Timestamp;
 
 import java.io.Serializable;
@@ -16,17 +14,21 @@ public class Trip implements Serializable {
     private String trip_name;
     private Timestamp created_at;
     private Timestamp completed_at;
-    private Location start_location;
-    private Location end_location;
+    private double start_latitude;
+    private double start_longitude;
+    private double end_latitude = 0;
+    private double end_longitude = 0;
     private double total_miles;
     private String status;
 
-    public Trip() {}
+    public Trip() {
+    }
 
-    public Trip(String user_id, String trip_name, Location start_location) {
+    public Trip(String user_id, String trip_name, double start_latitude, double start_longitude) {
         this.user_id = user_id;
         this.trip_name = trip_name;
-        this.start_location = start_location;
+        this.start_latitude = start_latitude;
+        this.start_longitude = start_longitude;
         this.created_at = Timestamp.now();
     }
 
@@ -56,7 +58,7 @@ public class Trip implements Serializable {
     }
 
     public String getStatus() {
-        if (end_location != null) {
+        if (end_latitude != 0 && end_longitude !=0) {
             status = "Completed";
         } else {
             status = "On Going";
@@ -64,21 +66,39 @@ public class Trip implements Serializable {
         return status;
     }
 
-    public Location getStart_location() {
-        return start_location;
+    public double getStart_latitude() {
+        return start_latitude;
     }
 
-    public Location getEnd_location() {
-        return end_location;
+    public double getStart_longitude() {
+        return start_longitude;
     }
 
-    public Trip setStart_location(Location start_location) {
-        this.start_location = start_location;
+    public double getEnd_latitude() {
+        return end_latitude;
+    }
+
+    public double getEnd_longitude() {
+        return end_longitude;
+    }
+
+    public Trip setStart_latitude(double start_latitude) {
+        this.start_latitude = start_latitude;
         return this;
     }
 
-    public Trip setEnd_location(Location end_location) {
-        this.end_location = end_location;
+    public Trip setStart_longitude(double start_longitude) {
+        this.start_longitude = start_longitude;
+        return this;
+    }
+
+    public Trip setEnd_latitude(double end_latitude) {
+        this.end_latitude = end_latitude;
+        return this;
+    }
+
+    public Trip setEnd_longitude(double end_longitude) {
+        this.end_longitude = end_longitude;
         return this;
     }
 
@@ -125,8 +145,10 @@ public class Trip implements Serializable {
                 ", trip_name='" + trip_name + '\'' +
                 ", created_at=" + created_at +
                 ", completed_at=" + completed_at +
-                ", start_location=" + start_location +
-                ", end_location=" + end_location +
+                ", start_latitude=" + start_latitude +
+                ", start_longitude=" + start_longitude +
+                ", end_latitude=" + end_latitude +
+                ", end_longitutde=" + end_longitude +
                 ", total_miles=" + total_miles +
                 ", status='" + status + '\'' +
                 '}';
