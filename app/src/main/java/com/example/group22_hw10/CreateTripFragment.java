@@ -5,6 +5,7 @@
 package com.example.group22_hw10;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -21,23 +22,18 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.group22_hw10.databinding.FragmentCreateTripBinding;
-import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.Priority;
 
 public class CreateTripFragment extends Fragment {
+    final static String[] PERMISSIONS = {
+        Manifest.permission.ACCESS_FINE_LOCATION,
+        Manifest.permission.ACCESS_COARSE_LOCATION,
+    };
 
     FragmentCreateTripBinding binding;
     LocationRequest locationRequest;
-    FusedLocationProviderClient fusedLocationProviderClient;
     Location currentLocation;
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext());
-    }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -50,28 +46,26 @@ public class CreateTripFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         binding.textViewCurrentLocationStatus.setText(R.string.location_status_loading);
-        binding.textViewCurrentLocationStatus.setTextColor(Color.YELLOW);
-
-        if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-//            fusedLocationProviderClient.getLastLocation()
-//                    .addOnSuccessListener(requireContext(), new OnSuccessListener<Location>() {
-//                        @Override
-//                        public void onSuccess(Location location) {
-//                            currentLocation = location;
-//                        }
-//                    });
-        }
-
-        // when we get current location
-        binding.textViewCurrentLocationStatus.setText(R.string.location_status_success);
-        binding.textViewCurrentLocationStatus.setTextColor(Color.GREEN);
+        binding.textViewCurrentLocationStatus.setTextColor(Color.RED);
 
         binding.buttonSubmit.setOnClickListener(v -> {
             String tripName = binding.editTextTripName.getText().toString();
             mListener.createTrip(tripName, currentLocation);
         });
+        binding.buttonSubmit.setEnabled(false);
 
         requireActivity().setTitle(R.string.create_trip_title);
+
+        Runnable callback = () -> {
+            // when we get current location
+            binding.textViewCurrentLocationStatus.setText(R.string.location_status_success);
+            binding.textViewCurrentLocationStatus.setTextColor(Color.GREEN);
+            binding.buttonSubmit.setEnabled(true);
+        };
+
+        if (!hasPermissions(requireActivity(), requireContext(), PERMISSIONS)) {
+            ActivityCompat.requestPermissions(requireActivity(), PERMISSIONS, MainActivity.LOCATION_PERMISSION_REQUEST_CODE);
+        }
     }
 
     AddTripListener mListener;
@@ -93,5 +87,21 @@ public class CreateTripFragment extends Fragment {
     interface AddTripListener {
         void createTrip(String trip_name, Location location);
         void goTrips();
+    }
+
+    public static boolean hasPermissions(Activity activity, Context context, String... permissions) {
+        if (context != null && permissions != null) {
+            for (String permission : permissions) {
+                if (ActivityCompat.shouldShowRequestPermissionRationale(activity, permission)) {
+                    if (ActivityCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
+                        return false;
+                    }
+                } else {
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 }
