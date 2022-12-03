@@ -24,6 +24,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
 import android.provider.Settings;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,11 +41,6 @@ import com.google.android.gms.tasks.CancellationTokenSource;
 public class CreateTripFragment extends Fragment {
 
     FusedLocationProviderClient fusedLocationClient;
-
-//    final static String[] PERMISSIONS = {
-//        Manifest.permission.ACCESS_FINE_LOCATION,
-//        Manifest.permission.ACCESS_COARSE_LOCATION,
-//    };
 
     FragmentCreateTripBinding binding;
     LocationRequest locationRequest;
@@ -67,17 +63,6 @@ public class CreateTripFragment extends Fragment {
 
         requireActivity().setTitle(R.string.create_trip_title);
 
-        Runnable callback = () -> {
-            // when we get current location
-            binding.textViewCurrentLocationStatus.setText(R.string.location_status_success);
-            binding.textViewCurrentLocationStatus.setTextColor(Color.GREEN);
-            binding.buttonSubmit.setEnabled(true);
-        };
-
-//        if (!hasPermissions(requireActivity(), requireContext(), PERMISSIONS)) {
-//            ActivityCompat.requestPermissions(requireActivity(), PERMISSIONS, MainActivity.LOCATION_PERMISSION_REQUEST_CODE);
-//        }
-
         if (hasLocationPermission(requireContext())) {
             getCurrentLocation();
         } else {
@@ -92,6 +77,9 @@ public class CreateTripFragment extends Fragment {
             String tripName = binding.editTextTripName.getText().toString();
             mListener.createTrip(tripName, currentLocation);
         });
+
+        requireActivity().setTitle(R.string.create_trip_title);
+
     }
 
     AddTripListener mListener;
@@ -124,6 +112,7 @@ public class CreateTripFragment extends Fragment {
         fusedLocationClient.getCurrentLocation(currentLocationRequest, cnclTokenSrc.getToken()).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 currentLocation = task.getResult();
+                Log.d("demo", "getCurrentLocation: " + currentLocation);
                 binding.textViewCurrentLocationStatus.setText(R.string.location_status_success);
                 binding.textViewCurrentLocationStatus.setTextColor(Color.GREEN);
                 binding.buttonSubmit.setEnabled(true);
@@ -135,23 +124,7 @@ public class CreateTripFragment extends Fragment {
 
     interface AddTripListener {
         void createTrip(String trip_name, Location location);
-        void goTrips();
     }
-
-//    public static boolean hasPermissions(Activity activity, Context context, String... permissions) {
-//        if (context != null && permissions != null) {
-//            for (String permission : permissions) {
-//                if (ActivityCompat.shouldShowRequestPermissionRationale(activity, permission)) {
-//                    if (ActivityCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
-//                        return false;
-//                    }
-//                } else {
-//                    return false;
-//                }
-//            }
-//        }
-//        return true;
-//    }
 
     public ActivityResultLauncher<String[]> multiplePermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(), result -> {
         boolean finePermissionAllowed;
