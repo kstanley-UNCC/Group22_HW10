@@ -5,6 +5,8 @@
 package com.example.group22_hw10;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.location.Location;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -71,9 +73,9 @@ public class TripsFragment extends Fragment {
         binding.tripsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         Query query = firebaseFirestore
-                .collection("users")
+                .collection("Users")
                 .document(firebaseUser.getUid())
-                .collection("trips")
+                .collection("Trips")
                 .orderBy("created_at", Query.Direction.DESCENDING);
 
         FirestoreRecyclerOptions<Trip> options = new FirestoreRecyclerOptions.Builder<Trip>()
@@ -86,7 +88,7 @@ public class TripsFragment extends Fragment {
                 holder.setTrip_name(model.getTrip_name());
                 holder.setTrip_start(model.getCreated_at());
                 holder.setTrip_end(model.getCompleted_at());
-                holder.setTrip_status(model.getStatus());
+                holder.setTrip_status(model.getStatus(), model.getEnd_location());
                 holder.setTrip_miles(model.getTotal_miles());
             }
 
@@ -103,13 +105,13 @@ public class TripsFragment extends Fragment {
         requireActivity().setTitle(R.string.trips_title);
     }
 
-    private class TripHolder extends RecyclerView.ViewHolder {
+    private static class TripHolder extends RecyclerView.ViewHolder {
 
         private final View view;
 
         public TripHolder(@NonNull View itemView) {
             super(itemView);
-            this.view = itemView;
+            view = itemView;
         }
 
         void setTrip_name(String trip_name) {
@@ -132,9 +134,14 @@ public class TripsFragment extends Fragment {
             textView.setText(trip_miles + " Miles");
         }
 
-        void setTrip_status(String trip_status) {
+        void setTrip_status(String trip_status, Location end_location) {
             TextView textView = view.findViewById(R.id.textViewTripStatus);
             textView.setText(trip_status);
+            if (end_location != null) {
+                textView.setTextColor(Color.GREEN);
+            } else {
+                textView.setTextColor(Color.RED);
+            }
         }
     }
 

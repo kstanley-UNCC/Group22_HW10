@@ -12,7 +12,6 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.example.group22_hw10.databinding.ActivityMainBinding;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -22,8 +21,6 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.util.Arrays;
-import java.util.Set;
 
 public class MainActivity extends AppCompatActivity implements LoginFragment.LoginListener, CreateAccountFragment.SignUpListener, TripsFragment.TripsListener, CreateTripFragment.AddTripListener {
     public final static int LOCATION_PERMISSION_REQUEST_CODE = 1;
@@ -142,31 +139,10 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
                         .setMessage("One or more location permissions were not granted, and as such the app cannot continue to function as anticipated.")
                         .setPositiveButton("Ok", (dialog, which) -> dialog.dismiss())
                         .show();
-                return;
             }
         } else {
             Log.d("demo", "onRequestPermissionsResult: Unknown permission request code: " + requestCode);
         }
-    }
-
-    public void getLastLocation(Runnable runnable) {
-        fusedLocationProviderClient.getLastLocation().addOnCompleteListener(task -> {
-            if (!task.isSuccessful()) {
-                runOnUiThread(() -> {
-                    Toast.makeText(MainActivity.this, "Unable to obtain last location.", Toast.LENGTH_LONG).show();
-                });
-                return;
-            }
-
-            Location location = task.getResult();
-            if (location == null) {
-                runOnUiThread(() -> {
-                    Toast.makeText(MainActivity.this, "Unable to obtain last location.", Toast.LENGTH_LONG).show();
-                });
-            }
-
-            runnable.run();
-        });
     }
 
     @Override
@@ -189,11 +165,30 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
 
     @Override
     public void createTrip(String trip_name, Location location) {
+        Trip trip = new Trip(firebaseUser.getUid(), trip_name, location);
 
+        firebaseFirestore
+                .collection("Users")
+                .document(trip.getUser_id())
+                .collection("Trips")
+                .document(trip.getTrip_id())
+                .set(trip)
+                .addOnCompleteListener(task -> {
+                    if (!task.isSuccessful()) {
+                        Exception exception = task.getException();
+                        assert exception != null;
+                        new AlertDialog.Builder(MainActivity.this)
+                                .setTitle("An Error Occurred")
+                                .setMessage(exception.getLocalizedMessage())
+                                .setPositiveButton("Ok", (dialog, which) -> dialog.dismiss())
+                                .show();
+                        return;
+                    }
+                    goTrips();
+                });
     }
 
-    @Override
     public void goTrips() {
-
+        getSupportFragmentManager().popBackStack();
     }
 }

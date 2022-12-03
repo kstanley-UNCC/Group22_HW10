@@ -1,5 +1,7 @@
 package com.example.group22_hw10;
 
+import android.location.Location;
+
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.firebase.Timestamp;
@@ -14,16 +16,17 @@ public class Trip implements Serializable {
     private String trip_name;
     private Timestamp created_at;
     private Timestamp completed_at;
-    private Polyline polyline;
+    private Location start_location;
+    private Location end_location;
     private double total_miles;
     private String status;
 
     public Trip() {}
 
-    public Trip(String user_id, String trip_name, Polyline polyline) {
+    public Trip(String user_id, String trip_name, Location start_location) {
         this.user_id = user_id;
         this.trip_name = trip_name;
-        this.polyline = polyline;
+        this.start_location = start_location;
         this.created_at = Timestamp.now();
     }
 
@@ -48,19 +51,35 @@ public class Trip implements Serializable {
     }
 
     public double getTotal_miles() {
+
         return total_miles;
     }
 
     public String getStatus() {
+        if (end_location != null) {
+            status = "Completed";
+        } else {
+            status = "On Going";
+        }
         return status;
     }
 
-    public Polyline getPolyline() {
-        return polyline;
+    public Location getStart_location() {
+        return start_location;
     }
 
-    public void setPolyline(Polyline polyline) {
-        this.polyline = polyline;
+    public Location getEnd_location() {
+        return end_location;
+    }
+
+    public Trip setStart_location(Location start_location) {
+        this.start_location = start_location;
+        return this;
+    }
+
+    public Trip setEnd_location(Location end_location) {
+        this.end_location = end_location;
+        return this;
     }
 
     public Trip setTrip_id(String trip_id) {
@@ -106,7 +125,8 @@ public class Trip implements Serializable {
                 ", trip_name='" + trip_name + '\'' +
                 ", created_at=" + created_at +
                 ", completed_at=" + completed_at +
-                ", polyline=" + polyline +
+                ", start_location=" + start_location +
+                ", end_location=" + end_location +
                 ", total_miles=" + total_miles +
                 ", status='" + status + '\'' +
                 '}';
