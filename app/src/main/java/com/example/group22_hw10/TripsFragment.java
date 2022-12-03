@@ -27,6 +27,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
 public class TripsFragment extends Fragment {
+
     FragmentTripsBinding binding;
 
     private static final String ARG_USER = "user";
