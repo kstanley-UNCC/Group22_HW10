@@ -93,6 +93,7 @@ public class TripsFragment extends Fragment {
                 holder.setTrip_end(model.getCompleted_at());
                 holder.setTrip_status(model.getStatus(), model.getEnd_latitude());
                 holder.setTrip_miles(model.getTotal_miles());
+                holder.setTrip_id(model.getTrip_id(), model.getTrip_name(), model.getCreated_at(), model.getCompleted_at(), model.getStatus(), model.getTotal_miles(), model.getEnd_latitude());
             }
 
             @NonNull
@@ -120,13 +121,13 @@ public class TripsFragment extends Fragment {
         adapter.stopListening();
     }
 
-    private static class TripHolder extends RecyclerView.ViewHolder {
+    public class TripHolder extends RecyclerView.ViewHolder {
 
         private final View view;
 
         public TripHolder(@NonNull View itemView) {
             super(itemView);
-            view = itemView;
+            this.view = itemView;
         }
 
         void setTrip_name(String trip_name) {
@@ -168,6 +169,10 @@ public class TripsFragment extends Fragment {
                 textView.setTextColor(Color.RED);
             }
         }
+
+        void setTrip_id(String trip_id, String trip_name, Timestamp created_at, Timestamp completed_at, String status, double total_miles, double end_latitude) {
+            itemView.setOnClickListener(view -> mListener.goToTrip(trip_id, trip_name, created_at, completed_at, status, total_miles, end_latitude));
+        }
     }
 
     TripsListener mListener;
@@ -180,5 +185,6 @@ public class TripsFragment extends Fragment {
 
     interface TripsListener {
         void goAddTrip();
+        void goToTrip(String trip_id, String trip_name, Timestamp created_at, Timestamp completed_at, String status, double total_miles, double end_latitude);
     }
 }

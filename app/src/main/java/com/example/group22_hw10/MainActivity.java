@@ -161,6 +161,14 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
     }
 
     @Override
+    public void goToTrip(String trip_id, String trip_name, Timestamp created_at, Timestamp completed_at, String status, double total_miles, double end_latitude) {
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.rootView, TripDetailsFragment.newInstance(trip_id, trip_name, created_at, completed_at, status, total_miles, end_latitude))
+                .addToBackStack(null)
+                .commit();
+    }
+
+    @Override
     public void onPointerCaptureChanged(boolean hasCapture) {
         super.onPointerCaptureChanged(hasCapture);
     }
