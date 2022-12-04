@@ -5,7 +5,6 @@
 package com.example.group22_hw10;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -30,14 +29,12 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.group22_hw10.databinding.FragmentCreateTripBinding;
-import com.google.android.gms.location.CurrentLocationRequest;
 import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.Granularity;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.Priority;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.tasks.CancellationTokenSource;
+import com.google.android.gms.tasks.OnCompleteListener;
 
 public class CreateTripFragment extends Fragment {
 
@@ -65,7 +62,7 @@ public class CreateTripFragment extends Fragment {
         requireActivity().setTitle(R.string.create_trip_title);
 
         if (hasLocationPermission(requireContext())) {
-            getCurrentLocation();
+            mListener.getCurrentLocation(null);
         } else {
             if (shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) || shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_COARSE_LOCATION)) {
                 showCustomDialog((dialog, which) -> multiplePermissionLauncher.launch(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}));
@@ -112,33 +109,9 @@ public class CreateTripFragment extends Fragment {
                 .build();
     }
 
-    @SuppressLint("MissingPermission")
-    public void getCurrentLocation() {
-        CurrentLocationRequest currentLocationRequest = new CurrentLocationRequest.Builder()
-                .setGranularity(Granularity.GRANULARITY_FINE)
-                .setPriority(Priority.PRIORITY_HIGH_ACCURACY)
-                .setDurationMillis(5000)
-                .setMaxUpdateAgeMillis(0)
-                .build();
-
-        CancellationTokenSource cnclTokenSrc = new CancellationTokenSource();
-
-        fusedLocationClient.getCurrentLocation(currentLocationRequest, cnclTokenSrc.getToken()).addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                Location location = task.getResult();
-                currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
-                Log.d("demo", "getCurrentLocation: " + currentLocation);
-                binding.textViewCurrentLocationStatus.setText(R.string.location_status_success);
-                binding.textViewCurrentLocationStatus.setTextColor(Color.GREEN);
-                binding.buttonSubmit.setEnabled(true);
-            } else {
-                task.getException().printStackTrace();
-            }
-        });
-    }
-
     interface AddTripListener {
         void createTrip(String trip_name, double lat, double longi);
+        void getCurrentLocation(OnCompleteListener onCompleteListener);
     }
 
     public ActivityResultLauncher<String[]> multiplePermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(), result -> {
@@ -146,7 +119,18 @@ public class CreateTripFragment extends Fragment {
         if (result.get(Manifest.permission.ACCESS_FINE_LOCATION) != null) {
             finePermissionAllowed = result.get(Manifest.permission.ACCESS_FINE_LOCATION);
             if (finePermissionAllowed) {
-                getCurrentLocation();
+                mListener.getCurrentLocation(task -> {
+                    if (task.isSuccessful()) {
+                        Location location = (Location)task.getResult();
+                        currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
+                        Log.d("demo", "getCurrentLocation: " + currentLocation);
+                        binding.textViewCurrentLocationStatus.setText(R.string.location_status_success);
+                        binding.textViewCurrentLocationStatus.setTextColor(Color.GREEN);
+                        binding.buttonSubmit.setEnabled(true);
+                    } else {
+                        task.getException().printStackTrace();
+                    }
+                });
             } else {
                 if (shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)) {
                     showCustomDialog((dialog, which) -> {

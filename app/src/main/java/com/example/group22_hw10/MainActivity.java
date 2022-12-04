@@ -5,24 +5,30 @@
 package com.example.group22_hw10;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 
 import com.example.group22_hw10.databinding.ActivityMainBinding;
+import com.google.android.gms.location.CurrentLocationRequest;
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.Granularity;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.location.Priority;
+import com.google.android.gms.tasks.CancellationTokenSource;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.firestore.FirebaseFirestore;
-
 
 public class MainActivity extends AppCompatActivity implements LoginFragment.LoginListener, CreateAccountFragment.SignUpListener, TripsFragment.TripsListener, CreateTripFragment.AddTripListener, TripDetailsFragment.TripDetailsInterface {
     public final static int LOCATION_PERMISSION_REQUEST_CODE = 1;
@@ -249,5 +255,23 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
 
     public void logout() {
         firebaseAuth.signOut();
+    }
+
+    @SuppressLint("MissingPermission")
+    public void getCurrentLocation(@Nullable OnCompleteListener onCompleteListener) {
+        CurrentLocationRequest currentLocationRequest = new CurrentLocationRequest.Builder()
+                .setGranularity(Granularity.GRANULARITY_FINE)
+                .setPriority(Priority.PRIORITY_HIGH_ACCURACY)
+                .setDurationMillis(5000)
+                .setMaxUpdateAgeMillis(0)
+                .build();
+
+        CancellationTokenSource cnclTokenSrc = new CancellationTokenSource();
+
+        if (onCompleteListener != null) {
+            fusedLocationProviderClient.getCurrentLocation(currentLocationRequest, cnclTokenSrc.getToken()).addOnCompleteListener(onCompleteListener);
+        } else {
+            fusedLocationProviderClient.getCurrentLocation(currentLocationRequest, cnclTokenSrc.getToken());
+        }
     }
 }

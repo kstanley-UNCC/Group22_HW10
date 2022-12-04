@@ -131,6 +131,7 @@ public class TripDetailsFragment extends Fragment implements OnMapReadyCallback 
     }
 
     public interface TripDetailsInterface {
+        void getCurrentLocation(@Nullable OnCompleteListener onCompleteListener);
         void updateTrip(Trip trip);
     }
 }
