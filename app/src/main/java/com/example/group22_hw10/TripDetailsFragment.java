@@ -20,11 +20,16 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.group22_hw10.databinding.FragmentTripDetailsBinding;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.Timestamp;
 
 import java.text.DecimalFormat;
@@ -96,10 +101,6 @@ public class TripDetailsFragment extends Fragment implements OnMapReadyCallback 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentTripDetailsBinding.inflate(inflater, container, false);
-
-        // Initialize map fragment
-        binding.mapView.getMapAsync(this);
-
         return binding.getRoot();
     }
 
@@ -146,37 +147,44 @@ public class TripDetailsFragment extends Fragment implements OnMapReadyCallback 
             // Disable to avoid clicking more than once
             binding.buttonComplete.setEnabled(false);
 
-            listener.getCurrentLocation(task -> {
-                if (!task.isSuccessful()) {
-                    Exception exception = task.getException();
-
-                    assert exception != null;
-                    new AlertDialog.Builder(requireActivity())
-                            .setTitle("Error")
-                            .setMessage(exception.getLocalizedMessage())
-                            .setPositiveButton("Ok", (dialog, which) -> dialog.dismiss())
-                            .show();
-
-                    // Re-enable so user can interact with button again
-                    binding.buttonComplete.setEnabled(true);
-                    return;
-                }
-
-                Location location = (Location) task.getResult();
-
-                trip.setCompleted_at(Timestamp.now());
-                trip.setEnd_latitude(location.getLatitude());
-                trip.setEnd_longitude(location.getLongitude());
-                calculateTotalMiles(trip);
-                listener.updateTrip(trip);
-            });
+            listener.getCurrentLocation(onCompleteListener);
         });
     }
+
+    public OnCompleteListener onCompleteListener = new OnCompleteListener() {
+        @Override
+        public void onComplete(@NonNull Task task) {
+            if (!task.isSuccessful()) {
+                Exception exception = task.getException();
+
+                assert exception != null;
+                new AlertDialog.Builder(requireActivity())
+                        .setTitle("Error")
+                        .setMessage(exception.getLocalizedMessage())
+                        .setPositiveButton("Ok", (dialog, which) -> dialog.dismiss())
+                        .show();
+
+                // Re-enable so user can interact with button again
+                binding.buttonComplete.setEnabled(true);
+                return;
+            }
+
+            Location location = (Location) task.getResult();
+            LatLng currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
+            Log.d("demo", "getCurrentLocation: " + currentLocation);
+            trip.setCompleted_at(Timestamp.now());
+            trip.setEnd_latitude(currentLocation.latitude);
+            trip.setEnd_longitude(currentLocation.longitude);
+            calculateTotalMiles(trip);
+            listener.updateTrip(trip);
+        }
+    };
 
     void startDateFormat(Timestamp tripStart) {
         Date date = tripStart.toDate();
         SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyy hh:mm a", Locale.getDefault());
-        String dateFormat = sdf.format(date);        binding.textViewTripStart.setText(dateFormat);
+        String dateFormat = sdf.format(date);
+        binding.textViewTripStart.setText("Started: " + dateFormat);
     }
 
     void endDateFormat(Timestamp tripEnd) {
@@ -184,9 +192,9 @@ public class TripDetailsFragment extends Fragment implements OnMapReadyCallback 
             Date date = tripEnd.toDate();
             SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyy hh:mm a", Locale.getDefault());
             String dateFormat = sdf.format(date);
-            binding.textViewTripCompleted.setText("Completed at: " + dateFormat);
+            binding.textViewTripCompleted.setText("Completed: " + dateFormat);
         } else {
-            binding.textViewTripCompleted.setText("Completed at: N/A");
+            binding.textViewTripCompleted.setText("Completed: N/A");
         }
     }
 
@@ -198,7 +206,9 @@ public class TripDetailsFragment extends Fragment implements OnMapReadyCallback 
             Location end = new Location("");
             end.setLatitude(trip.getEnd_latitude());
             end.setLongitude(trip.getEnd_longitude());
-            double totalMiles = start.distanceTo(end);
+            double totalMeters = start.distanceTo(end);
+            //convert to miles
+            double totalMiles = (totalMeters / 1609.344);
             trip.setTotal_miles(totalMiles);
         }
     }
