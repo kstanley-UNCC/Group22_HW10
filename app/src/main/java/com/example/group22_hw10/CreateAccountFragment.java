@@ -1,5 +1,5 @@
+// Homework Assignment 10
 // Group22_HW10
-// CreateAccountFragment.java
 // Ken Stanley & Stephanie Karp
 
 package com.example.group22_hw10;

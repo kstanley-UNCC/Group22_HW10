@@ -1,3 +1,7 @@
+// Homework Assignment 10
+// Group22_HW10
+// Ken Stanley & Stephanie Karp
+
 package com.example.group22_hw10;
 
 
