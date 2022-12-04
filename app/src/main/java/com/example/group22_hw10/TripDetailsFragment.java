@@ -101,6 +101,7 @@ public class TripDetailsFragment extends Fragment implements OnMapReadyCallback 
 
         binding.buttonComplete.setOnClickListener(v -> {
             trip.setCompleted_at(Timestamp.now());
+            listener.updateTrip(trip);
         });
     }
 
