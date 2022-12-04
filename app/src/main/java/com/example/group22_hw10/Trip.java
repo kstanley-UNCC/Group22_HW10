@@ -2,6 +2,8 @@ package com.example.group22_hw10;
 
 
 import com.google.android.gms.maps.model.LatLng;
+import androidx.annotation.NonNull;
+
 import com.google.firebase.Timestamp;
 
 import java.io.Serializable;
@@ -53,7 +55,6 @@ public class Trip implements Serializable {
     }
 
     public double getTotal_miles() {
-
         return total_miles;
     }
 
@@ -137,6 +138,7 @@ public class Trip implements Serializable {
         return this;
     }
 
+    @NonNull
     @Override
     public String toString() {
         return "Trip{" +
