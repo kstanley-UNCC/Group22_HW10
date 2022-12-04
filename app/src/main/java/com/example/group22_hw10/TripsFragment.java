@@ -113,7 +113,7 @@ public class TripsFragment extends Fragment {
                 holder.setTrip_end(model.getCompleted_at());
                 holder.setTrip_status(model.getStatus(), model.getEnd_latitude());
                 holder.setTrip_miles(model.getTotal_miles());
-                holder.setTrip_id(model.getTrip_id(), model.getTrip_name(), model.getCreated_at(), model.getCompleted_at(), model.getStatus(), model.getTotal_miles(), model.getEnd_latitude());
+                holder.setTrip_id(model.getTrip_id(), model.getTrip_name(), model.getCreated_at(), model.getCompleted_at(), model.getStatus(), model.getTotal_miles(), model.getStart_latitude(), model.getStart_longitude(), model.getEnd_latitude(), model.getEnd_longitude());
             }
 
             @NonNull
@@ -195,8 +195,8 @@ public class TripsFragment extends Fragment {
             }
         }
 
-        void setTrip_id(String trip_id, String trip_name, Timestamp created_at, Timestamp completed_at, String status, double total_miles, double end_latitude) {
-            itemView.setOnClickListener(view -> mListener.goToTrip(trip_id, trip_name, created_at, completed_at, status, total_miles, end_latitude));
+        void setTrip_id(String trip_id, String trip_name, Timestamp created_at, Timestamp completed_at, String status, double total_miles, double start_latitude, double start_longitude, double end_latitude, double end_longitude) {
+            itemView.setOnClickListener(view -> mListener.goToTrip(trip_id, trip_name, created_at, completed_at, status, total_miles, start_latitude, start_longitude, end_latitude, end_longitude));
         }
     }
 
@@ -210,7 +210,7 @@ public class TripsFragment extends Fragment {
 
     interface TripsListener {
         void goAddTrip();
-        void goToTrip(String trip_id, String trip_name, Timestamp created_at, Timestamp completed_at, String status, double total_miles, double end_latitude);
+        void goToTrip(String trip_id, String trip_name, Timestamp created_at, Timestamp completed_at, String status, double total_miles, double start_latitude, double start_longitude, double end_latitude, double end_longitude);
         void logout();
     }
 }

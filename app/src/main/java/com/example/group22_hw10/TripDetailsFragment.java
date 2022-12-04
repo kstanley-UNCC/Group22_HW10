@@ -46,7 +46,10 @@ public class TripDetailsFragment extends Fragment implements OnMapReadyCallback 
     private static final String ARG_TRIPEND = "tripEnd";
     private static final String ARG_TRIPSTATUS = "tripStatus";
     private static final String ARG_TRIPMILES = "tripMiles";
+    private static final String ARG_STARTLATITUDE = "startLatitude";
+    private static final String ARG_STARTLONGITUDE = "startLongitude";
     private static final String ARG_ENDLATITUDE = "endLatitude";
+    private static final String ARG_ENDLONGITUDE = "endLongitude";
 
     private String tripId;
     private String tripName;
@@ -54,17 +57,16 @@ public class TripDetailsFragment extends Fragment implements OnMapReadyCallback 
     private Timestamp tripEnd;
     private String tripStatus;
     private double tripMiles;
+    private double startLatitude;
+    private double startLongitude;
     private double endLatitude;
-
-    private GoogleMap map;
-    private CameraPosition cameraPosition;
-    private FusedLocationProviderClient fusedLocationProviderClient;
+    private double endLongitude;
 
     public TripDetailsFragment() {
         // Required empty public constructor
     }
 
-    public static TripDetailsFragment newInstance(String tripId, String tripName, Timestamp tripStart, Timestamp tripEnd, String tripStatus, double tripMiles, double endLatitude) {
+    public static TripDetailsFragment newInstance(String tripId, String tripName, Timestamp tripStart, Timestamp tripEnd, String tripStatus, double tripMiles, double startLatitude, double startLongitude, double endLatitude, double endLongitude) {
         TripDetailsFragment fragment = new TripDetailsFragment();
         Bundle args = new Bundle();
         args.putString(ARG_TRIPID, tripId);
@@ -73,7 +75,10 @@ public class TripDetailsFragment extends Fragment implements OnMapReadyCallback 
         args.putParcelable(ARG_TRIPEND, tripEnd);
         args.putString(ARG_TRIPSTATUS, tripStatus);
         args.putDouble(ARG_TRIPMILES, tripMiles);
+        args.putDouble(ARG_STARTLATITUDE, startLatitude);
+        args.putDouble(ARG_STARTLONGITUDE, startLongitude);
         args.putDouble(ARG_ENDLATITUDE, endLatitude);
+        args.putDouble(ARG_ENDLONGITUDE, endLongitude);
         fragment.setArguments(args);
         return fragment;
     }
@@ -88,7 +93,10 @@ public class TripDetailsFragment extends Fragment implements OnMapReadyCallback 
             tripEnd = getArguments().getParcelable(ARG_TRIPEND);
             tripStatus = getArguments().getString(ARG_TRIPSTATUS);
             tripMiles = getArguments().getDouble(ARG_TRIPMILES);
+            startLatitude = getArguments().getDouble(ARG_STARTLATITUDE);
+            startLongitude = getArguments().getDouble(ARG_STARTLONGITUDE);
             endLatitude = getArguments().getDouble(ARG_ENDLATITUDE);
+            endLongitude = getArguments().getDouble(ARG_ENDLONGITUDE);
         }
 
         // Construct a FusedLocationProviderClient.

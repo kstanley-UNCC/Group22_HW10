@@ -169,9 +169,9 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
     }
 
     @Override
-    public void goToTrip(String trip_id, String trip_name, Timestamp created_at, Timestamp completed_at, String status, double total_miles, double end_latitude) {
+    public void goToTrip(String trip_id, String trip_name, Timestamp created_at, Timestamp completed_at, String status, double total_miles, double start_latitude, double start_longitude, double end_latitude, double end_longitude) {
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.rootView, TripDetailsFragment.newInstance(trip_id, trip_name, created_at, completed_at, status, total_miles, end_latitude))
+                .replace(R.id.rootView, TripDetailsFragment.newInstance(trip_id, trip_name, created_at, completed_at, status, total_miles, start_latitude, start_longitude, end_latitude, end_longitude))
                 .addToBackStack(null)
                 .commit();
     }
