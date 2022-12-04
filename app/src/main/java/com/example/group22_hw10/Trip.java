@@ -1,7 +1,6 @@
 package com.example.group22_hw10;
 
 
-import com.google.android.gms.maps.model.LatLng;
 import androidx.annotation.NonNull;
 
 import com.google.firebase.Timestamp;
