@@ -29,9 +29,11 @@ import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 public class MainActivity extends AppCompatActivity implements LoginFragment.LoginListener, CreateAccountFragment.SignUpListener, TripsFragment.TripsListener, CreateTripFragment.AddTripListener, TripDetailsFragment.TripDetailsInterface {
+
     public final static int LOCATION_PERMISSION_REQUEST_CODE = 1;
 
     ActivityMainBinding binding;
+
     final FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
     final FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
     FirebaseUser firebaseUser;
