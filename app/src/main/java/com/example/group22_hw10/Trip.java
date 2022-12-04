@@ -8,8 +8,7 @@ import java.io.Serializable;
 import java.util.UUID;
 
 public class Trip implements Serializable {
-
-    private String trip_id = UUID.randomUUID().toString();
+    private String trip_id;
     private String user_id;
     private String trip_name;
     private Timestamp created_at;
@@ -25,6 +24,7 @@ public class Trip implements Serializable {
     }
 
     public Trip(String user_id, String trip_name, double start_latitude, double start_longitude) {
+        this.trip_id = UUID.randomUUID().toString();
         this.user_id = user_id;
         this.trip_name = trip_name;
         this.start_latitude = start_latitude;
