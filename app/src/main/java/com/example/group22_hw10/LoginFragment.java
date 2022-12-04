@@ -41,7 +41,9 @@ public class LoginFragment extends Fragment {
             String password = binding.editTextPassword.getText().toString();
 
             if (email.isEmpty()) {
-                Toast.makeText(requireActivity(), "Enter valid email!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireActivity(), "An email is required for authentication", Toast.LENGTH_SHORT).show();
+            } else if (password.isEmpty()) {
+                Toast.makeText(requireActivity(), "A password is required for authentication", Toast.LENGTH_SHORT).show();
             } else {
                 mListener.authenticate(email, password);
             }
