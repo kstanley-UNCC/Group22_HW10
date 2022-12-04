@@ -92,11 +92,11 @@ public class TripDetailsFragment extends Fragment implements OnMapReadyCallback 
 
         if (trip.getCompleted_at() != null) {
             binding.textViewTripStatus.setTextColor(Color.GREEN);
-            binding.buttonComplete.setEnabled(true);
+            binding.buttonComplete.setEnabled(false);
             binding.textViewTripMiles.setText(String.valueOf(trip.getTotal_miles()));
         } else {
             binding.textViewTripStatus.setTextColor(Color.RED);
-            binding.buttonComplete.setEnabled(false);
+            binding.buttonComplete.setEnabled(true);
         }
 
         binding.buttonComplete.setOnClickListener(v -> {
@@ -108,8 +108,7 @@ public class TripDetailsFragment extends Fragment implements OnMapReadyCallback 
     void startDateFormat(Timestamp tripStart) {
         Date date = tripStart.toDate();
         SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyy hh:mm a", Locale.getDefault());
-        String dateFormat = sdf.format(date);
-        binding.textViewTripStart.setText(dateFormat);
+        String dateFormat = sdf.format(date);        binding.textViewTripStart.setText(dateFormat);
     }
 
     void endDateFormat(Timestamp tripEnd) {
