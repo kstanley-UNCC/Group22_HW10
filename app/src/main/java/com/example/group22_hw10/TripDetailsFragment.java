@@ -51,14 +51,35 @@ public class TripDetailsFragment extends Fragment implements OnMapReadyCallback 
 
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
+        LatLng latLngStart = new LatLng(trip.getStart_latitude(), trip.getStart_longitude());
+
         googleMap.addMarker(new MarkerOptions()
-                .position(new LatLng(trip.getStart_latitude(), trip.getStart_longitude()))
+                .position(latLngStart)
                 .title("Start"));
 
         googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
         googleMap.getUiSettings().setCompassEnabled(true);
         googleMap.getUiSettings().setZoomGesturesEnabled(true);
         googleMap.getUiSettings().setZoomControlsEnabled(true);
+        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLngStart, 15));
+
+        // if the trip has been completed
+        if (trip.getCompleted_at() != null) {
+            // add 'end' marker
+            LatLng latLngEnd = new LatLng(trip.getEnd_latitude(), trip.getEnd_longitude());
+
+            googleMap.addMarker(new MarkerOptions()
+                    .position(latLngEnd)
+                    .title("End"));
+
+            // zoom camera to fit both markers
+            LatLngBounds.Builder builder = new LatLngBounds.Builder();
+            builder.include(latLngStart);
+            builder.include(latLngEnd);
+            LatLngBounds bounds = builder.build();
+
+            googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 50));
+        }
 
         Log.d("demo", "onMapReady: ");
     }
@@ -87,6 +108,13 @@ public class TripDetailsFragment extends Fragment implements OnMapReadyCallback 
         super.onViewCreated(view, savedInstanceState);
 
         requireActivity().setTitle(R.string.trip_details_title);
+
+        // Initialize map fragment
+        SupportMapFragment supportMapFragment=(SupportMapFragment)
+                getChildFragmentManager().findFragmentById(R.id.map);
+
+        // Async map
+        supportMapFragment.getMapAsync(this);
 
         binding.textViewTripName.setText(trip.getTrip_name());
         startDateFormat(trip.getCreated_at());
