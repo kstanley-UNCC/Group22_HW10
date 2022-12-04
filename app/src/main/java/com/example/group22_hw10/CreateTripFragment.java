@@ -30,9 +30,7 @@ import android.view.ViewGroup;
 
 import com.example.group22_hw10.databinding.FragmentCreateTripBinding;
 import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.location.Priority;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
 
@@ -41,7 +39,6 @@ public class CreateTripFragment extends Fragment {
     FusedLocationProviderClient fusedLocationClient;
 
     FragmentCreateTripBinding binding;
-    LocationRequest locationRequest;
     LatLng currentLocation;
 
     @Override
@@ -99,14 +96,6 @@ public class CreateTripFragment extends Fragment {
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         mListener = (AddTripListener) context;
-    }
-
-    public void createLocationRequest() {
-        locationRequest = new LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 1000)
-                .setWaitForAccurateLocation(false)
-                .setMinUpdateIntervalMillis(500)
-                .setMaxUpdateDelayMillis(1000)
-                .build();
     }
 
     interface AddTripListener {
