@@ -160,4 +160,16 @@ public class TripDetailsFragment extends Fragment implements OnMapReadyCallback 
             binding.textViewTripCompleted.setText("Completed at: N/A");
         }
     }
+
+    private TripDetailsInterface listener;
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        listener = (TripDetailsInterface) context;
+    }
+
+    public interface TripDetailsInterface {
+        void updateTrip(Trip trip);
+    }
 }

@@ -24,7 +24,7 @@ import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 
-public class MainActivity extends AppCompatActivity implements LoginFragment.LoginListener, CreateAccountFragment.SignUpListener, TripsFragment.TripsListener, CreateTripFragment.AddTripListener {
+public class MainActivity extends AppCompatActivity implements LoginFragment.LoginListener, CreateAccountFragment.SignUpListener, TripsFragment.TripsListener, CreateTripFragment.AddTripListener, TripDetailsFragment.TripDetailsInterface {
     public final static int LOCATION_PERMISSION_REQUEST_CODE = 1;
 
     ActivityMainBinding binding;
@@ -185,6 +185,29 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
     public void createTrip(String trip_name, double lat, double longi) {
         Trip trip = new Trip(firebaseUser.getUid(), trip_name, lat, longi);
 
+        firebaseFirestore
+                .collection("Users")
+                .document(trip.getUser_id())
+                .collection("Trips")
+                .document(trip.getTrip_id())
+                .set(trip)
+                .addOnCompleteListener(task -> {
+                    if (!task.isSuccessful()) {
+                        Exception exception = task.getException();
+                        assert exception != null;
+                        new AlertDialog.Builder(MainActivity.this)
+                                .setTitle("An Error Occurred")
+                                .setMessage(exception.getLocalizedMessage())
+                                .setPositiveButton("Ok", (dialog, which) -> dialog.dismiss())
+                                .show();
+                        return;
+                    }
+                    goTrips();
+                });
+    }
+
+    @Override
+    public void updateTrip(Trip trip) {
         firebaseFirestore
                 .collection("Users")
                 .document(trip.getUser_id())
