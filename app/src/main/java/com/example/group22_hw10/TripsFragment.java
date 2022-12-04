@@ -30,6 +30,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -177,7 +178,8 @@ public class TripsFragment extends Fragment {
 
         void setTrip_miles(double trip_miles) {
             TextView textView = view.findViewById(R.id.textViewTripMiles);
-            textView.setText(trip_miles + " Miles");
+            DecimalFormat df = new DecimalFormat("0.00");
+            textView.setText(df.format(trip_miles) + " Miles");
         }
 
         void setTrip_status(String trip_status, double end_latitude) {

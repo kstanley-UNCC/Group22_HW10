@@ -27,6 +27,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.firebase.Timestamp;
 
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -92,13 +93,25 @@ public class TripDetailsFragment extends Fragment implements OnMapReadyCallback 
         endDateFormat(trip.getCompleted_at());
         binding.textViewTripStatus.setText(trip.getStatus());
 
+        // if the trip has been completed
         if (trip.getCompleted_at() != null) {
+            // set status color to green
             binding.textViewTripStatus.setTextColor(Color.GREEN);
+            // disable and hide complete button
             binding.buttonComplete.setEnabled(false);
-            binding.textViewTripMiles.setText(String.valueOf(trip.getTotal_miles()));
-        } else {
+            binding.buttonComplete.setVisibility(View.GONE);
+            // show total miles
+            binding.textViewTripMiles.setVisibility(View.VISIBLE);
+            DecimalFormat df = new DecimalFormat("0.00");
+            binding.textViewTripMiles.setText(df.format(trip.getTotal_miles()) + " Miles");
+        } else { //if the trip is on going
+            // hide miles
+            binding.textViewTripMiles.setVisibility(View.GONE);
+            // set status color to red
             binding.textViewTripStatus.setTextColor(Color.RED);
+            //enable and show complete button
             binding.buttonComplete.setEnabled(true);
+            binding.buttonComplete.setVisibility(View.VISIBLE);
         }
 
         binding.buttonComplete.setOnClickListener(v -> {
@@ -126,9 +139,7 @@ public class TripDetailsFragment extends Fragment implements OnMapReadyCallback 
                 trip.setCompleted_at(Timestamp.now());
                 trip.setEnd_latitude(location.getLatitude());
                 trip.setEnd_longitude(location.getLongitude());
-
-                // TODO Calculate total milese
-
+                calculateTotalMiles(trip);
                 listener.updateTrip(trip);
             });
         });
@@ -148,6 +159,19 @@ public class TripDetailsFragment extends Fragment implements OnMapReadyCallback 
             binding.textViewTripCompleted.setText("Completed at: " + dateFormat);
         } else {
             binding.textViewTripCompleted.setText("Completed at: N/A");
+        }
+    }
+
+    void calculateTotalMiles(Trip trip) {
+        if (trip.getCompleted_at() != null) {
+            Location start = new Location("");
+            start.setLatitude(trip.getStart_latitude());
+            start.setLongitude(trip.getStart_longitude());
+            Location end = new Location("");
+            end.setLatitude(trip.getEnd_latitude());
+            end.setLongitude(trip.getEnd_longitude());
+            double totalMiles = start.distanceTo(end);
+            trip.setTotal_miles(totalMiles);
         }
     }
 
