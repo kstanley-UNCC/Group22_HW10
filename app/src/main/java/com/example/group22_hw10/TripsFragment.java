@@ -15,6 +15,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -56,9 +59,26 @@ public class TripsFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+
         if (getArguments() != null) {
             firebaseUser = getArguments().getParcelable(ARG_USER);
         }
+    }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        inflater.inflate(R.menu.menu, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == R.id.action_bar_logout) {
+            mListener.logout();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -93,7 +113,7 @@ public class TripsFragment extends Fragment {
                 holder.setTrip_end(model.getCompleted_at());
                 holder.setTrip_status(model.getStatus(), model.getEnd_latitude());
                 holder.setTrip_miles(model.getTotal_miles());
-                holder.setTrip_id(model.getTrip_id(), model.getTrip_name(), model.getCreated_at(), model.getCompleted_at(), model.getStatus(), model.getTotal_miles(), model.getEnd_latitude());
+                holder.setTrip_id(model.getTrip_id(), model.getTrip_name(), model.getCreated_at(), model.getCompleted_at(), model.getStatus(), model.getTotal_miles(), model.getStart_latitude(), model.getStart_longitude(), model.getEnd_latitude(), model.getEnd_longitude());
             }
 
             @NonNull
@@ -162,16 +182,21 @@ public class TripsFragment extends Fragment {
 
         void setTrip_status(String trip_status, double end_latitude) {
             TextView textView = view.findViewById(R.id.textViewTripStatus);
+            TextView tripMiles = view.findViewById(R.id.textViewTripMiles);
+
             textView.setText(trip_status);
+
             if (end_latitude != 0) {
                 textView.setTextColor(Color.GREEN);
+                tripMiles.setVisibility(View.VISIBLE);
             } else {
                 textView.setTextColor(Color.RED);
+                tripMiles.setVisibility(View.INVISIBLE);
             }
         }
 
-        void setTrip_id(String trip_id, String trip_name, Timestamp created_at, Timestamp completed_at, String status, double total_miles, double end_latitude) {
-            itemView.setOnClickListener(view -> mListener.goToTrip(trip_id, trip_name, created_at, completed_at, status, total_miles, end_latitude));
+        void setTrip_id(String trip_id, String trip_name, Timestamp created_at, Timestamp completed_at, String status, double total_miles, double start_latitude, double start_longitude, double end_latitude, double end_longitude) {
+            itemView.setOnClickListener(view -> mListener.goToTrip(trip_id, trip_name, created_at, completed_at, status, total_miles, start_latitude, start_longitude, end_latitude, end_longitude));
         }
     }
 
@@ -185,6 +210,7 @@ public class TripsFragment extends Fragment {
 
     interface TripsListener {
         void goAddTrip();
-        void goToTrip(String trip_id, String trip_name, Timestamp created_at, Timestamp completed_at, String status, double total_miles, double end_latitude);
+        void goToTrip(String trip_id, String trip_name, Timestamp created_at, Timestamp completed_at, String status, double total_miles, double start_latitude, double start_longitude, double end_latitude, double end_longitude);
+        void logout();
     }
 }

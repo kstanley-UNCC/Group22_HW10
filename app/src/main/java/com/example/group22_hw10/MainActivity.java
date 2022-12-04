@@ -5,26 +5,30 @@
 package com.example.group22_hw10;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.content.pm.PackageManager;
-import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 
 import com.example.group22_hw10.databinding.ActivityMainBinding;
+import com.google.android.gms.location.CurrentLocationRequest;
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.Granularity;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.location.Priority;
+import com.google.android.gms.tasks.CancellationTokenSource;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-
-public class MainActivity extends AppCompatActivity implements LoginFragment.LoginListener, CreateAccountFragment.SignUpListener, TripsFragment.TripsListener, CreateTripFragment.AddTripListener {
+public class MainActivity extends AppCompatActivity implements LoginFragment.LoginListener, CreateAccountFragment.SignUpListener, TripsFragment.TripsListener, CreateTripFragment.AddTripListener, TripDetailsFragment.TripDetailsInterface {
     public final static int LOCATION_PERMISSION_REQUEST_CODE = 1;
 
     ActivityMainBinding binding;
@@ -45,6 +49,12 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.rootView, new LoginFragment())
                 .commit();
+
+        firebaseAuth.addAuthStateListener(firebaseAuth -> {
+            if (firebaseAuth.getCurrentUser() == null) {
+                goLogin();
+            }
+        });
     }
 
     @Override
@@ -149,7 +159,9 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
 
     @Override
     public void goLogin() {
-        getSupportFragmentManager().popBackStack();
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.rootView, new LoginFragment())
+                .commit();
     }
 
     @Override
@@ -161,9 +173,23 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
     }
 
     @Override
-    public void goToTrip(String trip_id, String trip_name, Timestamp created_at, Timestamp completed_at, String status, double total_miles, double end_latitude) {
+    public void goToTrip(String trip_id, String trip_name, Timestamp created_at, Timestamp completed_at, String status, double total_miles, double start_latitude, double start_longitude, double end_latitude, double end_longitude) {
+        Trip trip = new Trip(
+                trip_id,
+                firebaseUser.getUid(),
+                trip_name,
+                created_at,
+                completed_at,
+                start_latitude,
+                start_longitude,
+                end_latitude,
+                end_longitude,
+                total_miles,
+                status
+        );
+
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.rootView, TripDetailsFragment.newInstance(trip_id, trip_name, created_at, completed_at, status, total_miles, end_latitude))
+                .replace(R.id.rootView, TripDetailsFragment.newInstance(trip))
                 .addToBackStack(null)
                 .commit();
     }
@@ -198,7 +224,52 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
                 });
     }
 
+    @Override
+    public void updateTrip(Trip trip) {
+        firebaseFirestore
+                .collection("Users")
+                .document(trip.getUser_id())
+                .collection("Trips")
+                .document(trip.getTrip_id())
+                .set(trip)
+                .addOnCompleteListener(task -> {
+                    if (!task.isSuccessful()) {
+                        Exception exception = task.getException();
+                        assert exception != null;
+                        new AlertDialog.Builder(MainActivity.this)
+                                .setTitle("An Error Occurred")
+                                .setMessage(exception.getLocalizedMessage())
+                                .setPositiveButton("Ok", (dialog, which) -> dialog.dismiss())
+                                .show();
+                        return;
+                    }
+                    goTrips();
+                });
+    }
+
     public void goTrips() {
         getSupportFragmentManager().popBackStack();
+    }
+
+    public void logout() {
+        firebaseAuth.signOut();
+    }
+
+    @SuppressLint("MissingPermission")
+    public void getCurrentLocation(@Nullable OnCompleteListener onCompleteListener) {
+        CurrentLocationRequest currentLocationRequest = new CurrentLocationRequest.Builder()
+                .setGranularity(Granularity.GRANULARITY_FINE)
+                .setPriority(Priority.PRIORITY_HIGH_ACCURACY)
+                .setDurationMillis(5000)
+                .setMaxUpdateAgeMillis(0)
+                .build();
+
+        CancellationTokenSource cnclTokenSrc = new CancellationTokenSource();
+
+        if (onCompleteListener != null) {
+            fusedLocationProviderClient.getCurrentLocation(currentLocationRequest, cnclTokenSrc.getToken()).addOnCompleteListener(onCompleteListener);
+        } else {
+            fusedLocationProviderClient.getCurrentLocation(currentLocationRequest, cnclTokenSrc.getToken());
+        }
     }
 }

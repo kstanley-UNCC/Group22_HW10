@@ -4,80 +4,80 @@
 
 package com.example.group22_hw10;
 
+import android.content.Context;
 import android.graphics.Color;
+import android.location.Location;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.example.group22_hw10.databinding.FragmentTripDetailsBinding;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.firebase.Timestamp;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-public class TripDetailsFragment extends Fragment {
+public class TripDetailsFragment extends Fragment implements OnMapReadyCallback {
 
     FragmentTripDetailsBinding binding;
 
-    private static final String ARG_TRIPID = "tripId";
-    private static final String ARG_TRIPNAME = "tripName";
-    private static final String ARG_TRIPSTART = "tripStart";
-    private static final String ARG_TRIPEND = "tripEnd";
-    private static final String ARG_TRIPSTATUS = "tripStatus";
-    private static final String ARG_TRIPMILES = "tripMiles";
-    private static final String ARG_ENDLATITUDE = "endLatitude";
+    private static final String ARG_TRIP = "trip";
 
-    private String tripId;
-    private String tripName;
-    private Timestamp tripStart;
-    private Timestamp tripEnd;
-    private String tripStatus;
-    private double tripMiles;
-    private double endLatitude;
+    private Trip trip;
 
-    public TripDetailsFragment() {
-        // Required empty public constructor
-    }
-
-    public static TripDetailsFragment newInstance(String tripId, String tripName, Timestamp tripStart, Timestamp tripEnd, String tripStatus, double tripMiles, double endLatitude) {
-        TripDetailsFragment fragment = new TripDetailsFragment();
+    public static TripDetailsFragment newInstance(Trip trip) {
         Bundle args = new Bundle();
-        args.putString(ARG_TRIPID, tripId);
-        args.putString(ARG_TRIPNAME, tripName);
-        args.putParcelable(ARG_TRIPSTART, tripStart);
-        args.putParcelable(ARG_TRIPEND, tripEnd);
-        args.putString(ARG_TRIPSTATUS, tripStatus);
-        args.putDouble(ARG_TRIPMILES, tripMiles);
-        args.putDouble(ARG_ENDLATITUDE, endLatitude);
+        args.putSerializable(ARG_TRIP, trip);
+
+        TripDetailsFragment fragment = new TripDetailsFragment();
         fragment.setArguments(args);
         return fragment;
     }
 
     @Override
+    public void onMapReady(@NonNull GoogleMap googleMap) {
+        googleMap.addMarker(new MarkerOptions()
+                .position(new LatLng(trip.getStart_latitude(), trip.getStart_longitude()))
+                .title("Start"));
+
+        googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+        googleMap.getUiSettings().setCompassEnabled(true);
+        googleMap.getUiSettings().setZoomGesturesEnabled(true);
+        googleMap.getUiSettings().setZoomControlsEnabled(true);
+
+        Log.d("demo", "onMapReady: ");
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         if (getArguments() != null) {
-            tripId = getArguments().getString(ARG_TRIPID);
-            tripName = getArguments().getString(ARG_TRIPNAME);
-            tripStart = getArguments().getParcelable(ARG_TRIPSTART);
-            tripEnd = getArguments().getParcelable(ARG_TRIPEND);
-            tripStatus = getArguments().getString(ARG_TRIPSTATUS);
-            tripMiles = getArguments().getDouble(ARG_TRIPMILES);
-            endLatitude = getArguments().getDouble(ARG_ENDLATITUDE);
+            this.trip = (Trip) getArguments().getSerializable(ARG_TRIP);
         }
     }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentTripDetailsBinding.inflate(inflater, container, false);
+
+        // Initialize map fragment
+        binding.mapView.getMapAsync(this);
+
         return binding.getRoot();
     }
 
@@ -87,31 +87,57 @@ public class TripDetailsFragment extends Fragment {
 
         requireActivity().setTitle(R.string.trip_details_title);
 
-        binding.textViewTripName.setText(tripName);
-        startDateFormat(tripStart);
-        endDateFormat(tripEnd);
-        binding.textViewTripStatus.setText(tripStatus);
+        binding.textViewTripName.setText(trip.getTrip_name());
+        startDateFormat(trip.getCreated_at());
+        endDateFormat(trip.getCompleted_at());
+        binding.textViewTripStatus.setText(trip.getStatus());
 
-        if (endLatitude != 0) {
+        if (trip.getCompleted_at() != null) {
             binding.textViewTripStatus.setTextColor(Color.GREEN);
+            binding.buttonComplete.setEnabled(false);
+            binding.textViewTripMiles.setText(String.valueOf(trip.getTotal_miles()));
         } else {
             binding.textViewTripStatus.setTextColor(Color.RED);
+            binding.buttonComplete.setEnabled(true);
         }
 
-        if (tripEnd == null) {
-            binding.buttonComplete.setEnabled(true);
-            binding.buttonComplete.setOnClickListener(v -> tripEnd = Timestamp.now());
-        } else {
+        binding.buttonComplete.setOnClickListener(v -> {
+            // Disable to avoid clicking more than once
             binding.buttonComplete.setEnabled(false);
-            binding.textViewTripMiles.setText(String.valueOf(tripMiles));
-        }
+
+            listener.getCurrentLocation(task -> {
+                if (!task.isSuccessful()) {
+                    Exception exception = task.getException();
+
+                    assert exception != null;
+                    new AlertDialog.Builder(requireActivity())
+                            .setTitle("Error")
+                            .setMessage(exception.getLocalizedMessage())
+                            .setPositiveButton("Ok", (dialog, which) -> dialog.dismiss())
+                            .show();
+
+                    // Re-enable so user can interact with button again
+                    binding.buttonComplete.setEnabled(true);
+                    return;
+                }
+
+                Location location = (Location) task.getResult();
+
+                trip.setCompleted_at(Timestamp.now());
+                trip.setEnd_latitude(location.getLatitude());
+                trip.setEnd_longitude(location.getLongitude());
+
+                // TODO Calculate total milese
+
+                listener.updateTrip(trip);
+            });
+        });
     }
 
     void startDateFormat(Timestamp tripStart) {
         Date date = tripStart.toDate();
         SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyy hh:mm a", Locale.getDefault());
-        String dateFormat = sdf.format(date);
-        binding.textViewTripStart.setText(dateFormat);
+        String dateFormat = sdf.format(date);        binding.textViewTripStart.setText(dateFormat);
     }
 
     void endDateFormat(Timestamp tripEnd) {
@@ -123,5 +149,18 @@ public class TripDetailsFragment extends Fragment {
         } else {
             binding.textViewTripCompleted.setText("Completed at: N/A");
         }
+    }
+
+    private TripDetailsInterface listener;
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        listener = (TripDetailsInterface) context;
+    }
+
+    public interface TripDetailsInterface {
+        void getCurrentLocation(@Nullable OnCompleteListener onCompleteListener);
+        void updateTrip(Trip trip);
     }
 }
