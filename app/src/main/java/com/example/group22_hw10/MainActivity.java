@@ -245,7 +245,11 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
                                 .show();
                         return;
                     }
-                    goTrips();
+
+                    getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.rootView, TripDetailsFragment.newInstance(trip))
+                            .addToBackStack(null)
+                            .commit();
                 });
     }
 
