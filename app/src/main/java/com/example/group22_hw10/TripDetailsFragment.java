@@ -6,10 +6,12 @@ package com.example.group22_hw10;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.location.Location;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
 import android.util.Log;
@@ -22,6 +24,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.firebase.Timestamp;
 
 import java.text.SimpleDateFormat;
@@ -99,8 +102,35 @@ public class TripDetailsFragment extends Fragment implements OnMapReadyCallback 
         }
 
         binding.buttonComplete.setOnClickListener(v -> {
-            trip.setCompleted_at(Timestamp.now());
-            listener.updateTrip(trip);
+            // Disable to avoid clicking more than once
+            binding.buttonComplete.setEnabled(false);
+
+            listener.getCurrentLocation(task -> {
+                if (!task.isSuccessful()) {
+                    Exception exception = task.getException();
+
+                    assert exception != null;
+                    new AlertDialog.Builder(requireActivity())
+                            .setTitle("Error")
+                            .setMessage(exception.getLocalizedMessage())
+                            .setPositiveButton("Ok", (dialog, which) -> dialog.dismiss())
+                            .show();
+
+                    // Re-enable so user can interact with button again
+                    binding.buttonComplete.setEnabled(true);
+                    return;
+                }
+
+                Location location = (Location) task.getResult();
+
+                trip.setCompleted_at(Timestamp.now());
+                trip.setEnd_latitude(location.getLatitude());
+                trip.setEnd_longitude(location.getLongitude());
+
+                // TODO Calculate total milese
+
+                listener.updateTrip(trip);
+            });
         });
     }
 
