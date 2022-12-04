@@ -76,6 +76,19 @@ public class CreateTripFragment extends Fragment {
 
         binding.buttonSubmit.setOnClickListener(v -> {
             String tripName = binding.editTextTripName.getText().toString();
+
+            if (tripName.isEmpty()) {
+                new androidx.appcompat.app.AlertDialog.Builder(requireActivity())
+                        .setTitle("Error")
+                        .setMessage("A trip name must be given before you can save the trip.")
+                        .setPositiveButton("Ok", (dialog, which) -> {
+                            dialog.dismiss();
+                            binding.editTextTripName.requestFocus();
+                        })
+                        .show();
+                return;
+            }
+
             mListener.createTrip(tripName, currentLocation.latitude, currentLocation.longitude);
         });
 
