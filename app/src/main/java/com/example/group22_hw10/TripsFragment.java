@@ -182,11 +182,16 @@ public class TripsFragment extends Fragment {
 
         void setTrip_status(String trip_status, double end_latitude) {
             TextView textView = view.findViewById(R.id.textViewTripStatus);
+            TextView tripMiles = view.findViewById(R.id.textViewTripMiles);
+
             textView.setText(trip_status);
+
             if (end_latitude != 0) {
                 textView.setTextColor(Color.GREEN);
+                tripMiles.setVisibility(View.VISIBLE);
             } else {
                 textView.setTextColor(Color.RED);
+                tripMiles.setVisibility(View.INVISIBLE);
             }
         }
 
