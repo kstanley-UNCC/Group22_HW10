@@ -206,5 +206,6 @@ public class TripsFragment extends Fragment {
     interface TripsListener {
         void goAddTrip();
         void goToTrip(String trip_id, String trip_name, Timestamp created_at, Timestamp completed_at, String status, double total_miles, double end_latitude);
+        void logout();
     }
 }

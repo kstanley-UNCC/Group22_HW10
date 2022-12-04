@@ -45,6 +45,12 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.rootView, new LoginFragment())
                 .commit();
+
+        firebaseAuth.addAuthStateListener(firebaseAuth -> {
+            if (firebaseAuth.getCurrentUser() == null) {
+                goLogin();
+            }
+        });
     }
 
     @Override
@@ -149,7 +155,9 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
 
     @Override
     public void goLogin() {
-        getSupportFragmentManager().popBackStack();
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.rootView, new LoginFragment())
+                .commit();
     }
 
     @Override
@@ -200,5 +208,9 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
 
     public void goTrips() {
         getSupportFragmentManager().popBackStack();
+    }
+
+    public void logout() {
+        firebaseAuth.signOut();
     }
 }
