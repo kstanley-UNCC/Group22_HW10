@@ -4,32 +4,24 @@
 
 package com.example.group22_hw10;
 
-import android.Manifest;
-import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.example.group22_hw10.databinding.FragmentTripDetailsBinding;
-import com.google.android.gms.common.api.GoogleApi;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.CameraPosition;
-import com.google.android.gms.maps.model.MapStyleOptions;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.Timestamp;
 
 import java.text.SimpleDateFormat;
@@ -84,8 +76,23 @@ public class TripDetailsFragment extends Fragment implements OnMapReadyCallback 
     }
 
     @Override
+    public void onMapReady(@NonNull GoogleMap googleMap) {
+        googleMap.addMarker(new MarkerOptions()
+                .position(new LatLng(startLatitude, startLongitude))
+                .title("Start"));
+
+        googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+        googleMap.getUiSettings().setCompassEnabled(true);
+        googleMap.getUiSettings().setZoomGesturesEnabled(true);
+        googleMap.getUiSettings().setZoomControlsEnabled(true);
+
+        Log.d("demo", "onMapReady: ");
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         if (getArguments() != null) {
             tripId = getArguments().getString(ARG_TRIPID);
             tripName = getArguments().getString(ARG_TRIPNAME);
@@ -98,32 +105,15 @@ public class TripDetailsFragment extends Fragment implements OnMapReadyCallback 
             endLatitude = getArguments().getDouble(ARG_ENDLATITUDE);
             endLongitude = getArguments().getDouble(ARG_ENDLONGITUDE);
         }
-
-        // Construct a FusedLocationProviderClient.
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireActivity());
-    }
-
-    @Override
-    public void onMapReady(@NonNull GoogleMap map) {
-        this.map = map;
-        map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-        map.getUiSettings().setZoomControlsEnabled(true);
-        map.getUiSettings().setZoomGesturesEnabled(true);
-        map.getUiSettings().setCompassEnabled(true);
-
-        if (ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            buildGoogleApiClient();
-            map.setMyLocationEnabled(true);
-        }
-    }
-
-    protected synchronized void buildGoogleApiClient() {
-
     }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentTripDetailsBinding.inflate(inflater, container, false);
+
+        // Initialize map fragment
+        binding.mapView.getMapAsync(this);
+
         return binding.getRoot();
     }
 
@@ -151,10 +141,6 @@ public class TripDetailsFragment extends Fragment implements OnMapReadyCallback 
             binding.buttonComplete.setEnabled(false);
             binding.textViewTripMiles.setText(String.valueOf(tripMiles));
         }
-
-        // Build the map.
-        MapView mapView = binding.mapView;
-        mapView.getMapAsync(this);
     }
 
     void startDateFormat(Timestamp tripStart) {
